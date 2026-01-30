@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shake to Ring</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="theme-color" content="#f8f9fa">
+</head>
+<body>
+
+    <!-- Permission Overlay -->
+    <div id="overlay">
+        <div class="bell-container" style="margin-bottom: 30px; transform: scale(0.8);">
+            <img src="assets/bell.svg" alt="Bell Icon">
+        </div>
+        <button id="start-btn" class="start-btn">Start Experience</button>
+        <p class="instruction">Tap 'Start' to enable sound and motion control.</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Shake to Ring!</h1>
+        <div id="bell-container" class="bell-container">
+            <img id="bell-icon" src="assets/bell.svg" alt="Bell">
+        </div>
+    </div>
+
+    <div id="debug" class="debug-info"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

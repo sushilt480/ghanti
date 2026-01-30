@@ -1,0 +1,16 @@
+{
+  "name": "shake-to-ring",
+  "version": "1.0.0",
+  "description": "A mobile-friendly shake-to-ring web application",
+  "main": "app.js",
+  "scripts": {
+    "start": "npx http-server . -c-1 --ssl"
+  },
+  "keywords": [
+    "shake",
+    "accelerometer",
+    "web-audio"
+  ],
+  "author": "",
+  "license": "ISC"
+}
