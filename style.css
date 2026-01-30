@@ -1,15 +1,21 @@
 :root {
-    --primary-color: #FFD700;
-    --text-color: #333;
-    --bg-color: #f8f9fa;
-    --accent-color: #ff6b6b;
+    --primary-color: #FF9933;
+    /* Saffron */
+    --secondary-color: #FFD700;
+    /* Gold */
+    --text-color: #5D4037;
+    /* Dark Brown */
+    --bg-gradient-start: #FFF3E0;
+    --bg-gradient-end: #FFECB3;
+    --accent-color: #D84315;
 }
 
 body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-color);
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    color: var(--text-color);
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -24,43 +30,95 @@ body {
     text-align: center;
     position: relative;
     z-index: 1;
+    width: 100%;
 }
 
 h1 {
-    color: var(--text-color);
-    font-weight: 300;
+    color: var(--accent-color);
+    font-weight: 600;
     margin-bottom: 2rem;
-    font-size: 1.5rem;
-    opacity: 0.8;
+    font-size: 2rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    letter-spacing: 1px;
 }
 
 .bell-container {
-    width: 200px;
-    height: 200px;
+    width: 220px;
+    height: 220px;
     margin: 0 auto;
     cursor: pointer;
     transition: transform 0.1s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 50%;
 }
 
 #bell-icon {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+    filter: drop-shadow(0 15px 25px rgba(93, 64, 55, 0.3));
+    /* Make the bell look more brass/gold if it's an SVG we can filter, otherwise just shadow */
 }
 
 /* Shake Animation */
 .shake {
-    animation: shake-animation 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    animation: shake-animation 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+/* Ringing Glow Animation */
+.bell-container.ringing::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 2px solid var(--primary-color);
+    animation: ripple 1s ease-out;
+    opacity: 0;
+}
+
+@keyframes ripple {
+    0% {
+        width: 100%;
+        height: 100%;
+        opacity: 0.8;
+    }
+
+    100% {
+        width: 180%;
+        height: 180%;
+        opacity: 0;
+    }
 }
 
 @keyframes shake-animation {
-    10%, 90% { transform: translate3d(-1px, 0, 0) rotate(-5deg); }
-    20%, 80% { transform: translate3d(2px, 0, 0) rotate(5deg); }
-    30%, 50%, 70% { transform: translate3d(-4px, 0, 0) rotate(-7deg); }
-    40%, 60% { transform: translate3d(4px, 0, 0) rotate(7deg); }
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0) rotate(-5deg);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0) rotate(5deg);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0) rotate(-7deg);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0) rotate(7deg);
+    }
 }
 
 /* Interaction Overlay */
@@ -70,7 +128,8 @@ h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255,255,255,0.95);
+    background: rgba(255, 248, 225, 0.98);
+    /* Warmer overlay */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -85,28 +144,30 @@ h1 {
 }
 
 .start-btn {
-    padding: 15px 40px;
-    font-size: 1.2rem;
-    background: var(--text-color);
+    padding: 16px 48px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    background: var(--primary-color);
     color: white;
     border: none;
     border-radius: 50px;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(255, 153, 51, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
 .start-btn:active {
     transform: scale(0.95);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .instruction {
-    margin-top: 20px;
-    color: #666;
-    font-size: 0.9rem;
+    margin-top: 25px;
+    color: var(--text-color);
+    font-size: 1.1rem;
     max-width: 80%;
     text-align: center;
+    line-height: 1.5;
 }
 
 .debug-info {
