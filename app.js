@@ -5,8 +5,13 @@ class ShakeDetector {
         this.startBtn = document.getElementById('start-btn');
         this.debugEl = document.getElementById('debug');
 
+        // Auto Ring Controls
+        this.autoRingBtn = document.getElementById('auto-ring-btn');
+        this.autoRingInterval = null;
+        this.isAutoRinging = false;
+
         // Shake detection configuration
-        this.threshold = 15; // Sensitivity
+        this.threshold = 10; // Slightly more sensitive
         this.lastX = 0;
         this.lastY = 0;
         this.lastZ = 0;
@@ -22,8 +27,14 @@ class ShakeDetector {
     init() {
         this.startBtn.addEventListener('click', () => this.enableSensors());
 
-        // Also allow manual ring on tap
+        // Manual tap
         this.bell.addEventListener('click', () => this.triggerRing());
+
+        // Auto Ring
+        this.autoRingBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent parent clicks
+            this.toggleAutoRing();
+        });
     }
 
     async enableSensors() {
@@ -66,16 +77,15 @@ class ShakeDetector {
         const now = this.audioCtx.currentTime;
         const masterGain = this.audioCtx.createGain();
 
-        // Master Gain Envelope - Long sustain for Ghanti
+        // Master Gain Envelope
         masterGain.gain.setValueAtTime(0, now);
-        masterGain.gain.linearRampToValueAtTime(1.0, now + 0.02); // Sharp attack (metal strike)
-        masterGain.gain.exponentialRampToValueAtTime(0.01, now + 4.0); // Long decay (resonance)
+        masterGain.gain.linearRampToValueAtTime(1.0, now + 0.02);
+        masterGain.gain.exponentialRampToValueAtTime(0.01, now + 3.0);
 
         masterGain.connect(this.audioCtx.destination);
 
-        // Hindu Bell Synthesis (Brass/Bronze alloy properties)
-        // Fundamental frequency ~800-1000Hz for a hand bell
-        const fundamental = 880;
+        // Slightly higher pitch for continuous ringing to clear up mud
+        const fundamental = 900;
 
         // Partials: ratio, relative amplitude, decay scalar
         // Brass bells have non-integer harmonics giving them their distinctive tone
@@ -84,8 +94,7 @@ class ShakeDetector {
             { ratio: 2.0, amp: 0.6, decay: 0.9 },    // Prime
             { ratio: 3.0, amp: 0.4, decay: 0.8 },    // Tierce (approx)
             { ratio: 4.2, amp: 0.25, decay: 0.6 },   // Inharmonic upper partial
-            { ratio: 5.4, amp: 0.15, decay: 0.5 },   // High metal ring
-            { ratio: 6.8, amp: 0.1, decay: 0.3 }     // Shimmer
+            { ratio: 5.4, amp: 0.15, decay: 0.5 }   // High metal ring
         ];
 
         partials.forEach(p => {
@@ -100,17 +109,19 @@ class ShakeDetector {
 
             oscGain.gain.setValueAtTime(0, now);
             oscGain.gain.linearRampToValueAtTime(p.amp, now + 0.01);
-            oscGain.gain.exponentialRampToValueAtTime(0.001, now + 4.0 * p.decay);
+            oscGain.gain.exponentialRampToValueAtTime(0.001, now + 3.0 * p.decay);
 
             osc.connect(oscGain);
             oscGain.connect(masterGain);
 
             osc.start(now);
-            osc.stop(now + 4.5);
+            osc.stop(now + 3.5);
         });
     }
 
     handleMotion(event) {
+        if (this.isAutoRinging) return; // Ignore shake during auto-ring
+
         const current = event.accelerationIncludingGravity;
         if (!current) return;
 
@@ -138,31 +149,47 @@ class ShakeDetector {
         }
     }
 
+    toggleAutoRing() {
+        this.isAutoRinging = !this.isAutoRinging;
+
+        if (this.isAutoRinging) {
+            this.autoRingBtn.classList.add('active');
+            this.autoRingBtn.innerHTML = '<span class="icon">⏹️</span> Stop Aarti';
+            this.triggerRing(); // Start immediately
+            this.autoRingInterval = setInterval(() => this.triggerRing(), 600); // Continuous rhythm
+        } else {
+            this.autoRingBtn.classList.remove('active');
+            this.autoRingBtn.innerHTML = '<span class="icon">🔔</span> Auto Ring (Aarti)';
+            clearInterval(this.autoRingInterval);
+            this.autoRingInterval = null;
+        }
+    }
+
     triggerRing() {
-        if (this.isShaking) return; // Debounce
+        // Reduced debounce for manual shake to allow "continuous" feel if shaken hard
+        if (this.isShaking && !this.isAutoRinging) return;
 
         this.isShaking = true;
 
         // Visuals
+        this.bell.classList.remove('shake'); // Reset to replay animation
+        void this.bell.offsetWidth; // Trigger reflow
         this.bell.classList.add('shake');
-        this.bell.classList.add('ringing'); // Add ripple effect
+        this.bell.classList.add('ringing');
 
         // Audio
         this.playBellSound();
 
-        // Haptics
-        if (navigator.vibrate) {
-            navigator.vibrate([50, 50, 50]); // Multi-pulse
-        }
+        // NO VIBRATION (Requested by user)
 
-        // Reset state after animation
+        // Reset state
         setTimeout(() => {
-            this.bell.classList.remove('shake');
-            this.bell.classList.remove('ringing');
+            if (!this.isAutoRinging) {
+                this.bell.classList.remove('shake');
+                this.bell.classList.remove('ringing');
+            }
             this.isShaking = false;
-        }, 500); // Allow re-ringing faaster
-
-        // this.debugEl.innerText = "Ring! " + new Date().toLocaleTimeString();
+        }, 150); // Very short debounce for responsiveness
     }
 }
 
