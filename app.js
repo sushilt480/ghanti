@@ -7,6 +7,7 @@ class ShakeDetector {
 
         // Auto Ring Controls
         this.autoRingBtn = document.getElementById('auto-ring-btn');
+        this.shareBtn = document.getElementById('share-btn');
         this.autoRingInterval = null;
         this.isAutoRinging = false;
 
@@ -35,6 +36,42 @@ class ShakeDetector {
             e.stopPropagation(); // Prevent parent clicks
             this.toggleAutoRing();
         });
+
+        // Share Link
+        if (this.shareBtn) {
+            this.shareBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.shareApp();
+            });
+        }
+    }
+
+    async shareApp() {
+        const shareData = {
+            title: 'Pooja Ghanti 🕉️',
+            text: 'Turn your phone into a holy temple bell! Shake to ring and perform Aarti anywhere. 🔔✨',
+            url: window.location.href
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.log('Error sharing:', err);
+            }
+        } else {
+            // Fallback for desktop/unsupported browsers
+            try {
+                await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+                const originalText = this.shareBtn.innerHTML;
+                this.shareBtn.innerHTML = '<span class="icon">✅</span> Copied!';
+                setTimeout(() => {
+                    this.shareBtn.innerHTML = originalText;
+                }, 2000);
+            } catch (err) {
+                prompt('Copy this link to share:', shareData.url);
+            }
+        }
     }
 
     async enableSensors() {

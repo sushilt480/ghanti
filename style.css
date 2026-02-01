@@ -173,13 +173,19 @@ h1 {
 .controls {
     margin-top: 40px;
     z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    /* Space between buttons */
+    justify-content: center;
+    width: 100%;
 }
 
 .control-btn {
     background: rgba(255, 255, 255, 0.9);
     border: 2px solid var(--primary-color);
     color: var(--accent-color);
-    padding: 12px 30px;
+    padding: 12px 25px;
     border-radius: 30px;
     font-size: 1rem;
     font-weight: 600;
@@ -188,8 +194,10 @@ h1 {
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin: 0 auto;
+    gap: 8px;
+    min-width: 160px;
+    /* Consistent width */
+    justify-content: center;
 }
 
 .control-btn:hover,
@@ -198,6 +206,16 @@ h1 {
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(255, 153, 51, 0.4);
+}
+
+.share-btn {
+    border-color: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.share-btn:hover {
+    background: var(--secondary-color);
+    color: var(--text-color);
 }
 
 .control-btn:active {
